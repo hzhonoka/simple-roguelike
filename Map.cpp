@@ -56,7 +56,7 @@ void Map::set(Vec2 pos, Tile t)
 
 void Map::setstairs(Vec2 setpos)
 {
-	set(setpos, Tile::stair);
+	set(setpos, Tile::Stair);
 	stairsDownPos = setpos;
 }
 

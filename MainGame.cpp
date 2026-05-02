@@ -3,12 +3,13 @@
 #include "Map.h"
 #include "player.h"
 #include "color.h"
+#include "EntityManager.h"
 #include<iostream>
 #include <windows.h>
 #include <conio.h>
 #include <random>
 #include <string>
-void static printmap(const Map& themap,Player& player)
+void static printmap(const Map& themap,Player& player, const EntityManager& entityMgr)
 {
     std::cout << "\033[2J\033[H";
     std::cout << "==========floor:" << player.getcurrentfloor() + 1 << "==========\n\n";
@@ -20,6 +21,14 @@ void static printmap(const Map& themap,Player& player)
             if (player.getpos().y == i && player.getpos().x == j) 
             {
                 line += "\033[93m@\033[0m";
+            }
+            else if (auto e = entityMgr.GetEntityAt({ j, i }))
+            {
+                line += "\033[";
+                line += std::to_string(static_cast<int>(e->color));
+                line += "m";
+                line += e->symbol;
+                line += "\033[0m";
             }
             else 
             {
@@ -38,6 +47,7 @@ void static printmap(const Map& themap,Player& player)
 int main()
 {
     std::vector<Map> floors;
+    EntityManager entityMgr;
     system("chcp 65001");
     #ifdef _WIN32
         SetConsoleOutputCP(CP_UTF8);
@@ -60,7 +70,9 @@ int main()
     floors[0].generate();
     player.setpos(floors[0].getRandomFloorPos());
     floors[0].setstairs(floors[0].getRandomFloorPosExcluding(player.getpos(), 8));
-    printmap(floors[0], player);
+    entityMgr.SpawnPotion(floors[0], player.getpos(), floors[0].getstair());
+    entityMgr.SpawnMonster(floors[0], player.getpos(), floors[0].getstair());
+    printmap(floors[0], player, entityMgr);
 
     while (true) {
         if (_kbhit()) {           // 如果有按键按下
@@ -72,10 +84,7 @@ int main()
             if (key == 'a' || key == 'A') next.x -= 1;
             if (key == 'd' || key == 'D') next.x += 1;
             if (key == 'q' || key == 'Q') break;  // 退出
-            // 先检查能不能走
-            if (floors[player.getcurrentfloor()].isWalkable(next)) {
-                player.setpos(next);
-            }
+            entityMgr.ProcessPlayerAction(player, next, floors[player.getcurrentfloor()]);
             if (player.getpos().x == floors[player.getcurrentfloor()].getstair().x && player.getpos().y == floors[player.getcurrentfloor()].getstair().y)
             {
                 if (key == 'e' || key == 'E')
@@ -87,9 +96,15 @@ int main()
                     floors[player.getcurrentfloor()].generate();
                     player.setpos(floors[player.getcurrentfloor()].getRandomFloorPos());
                     floors[player.getcurrentfloor()].setstairs(floors[player.getcurrentfloor()].getRandomFloorPosExcluding(player.getpos(), 8));
+                    entityMgr.clear();
+                    entityMgr.SpawnPotion(floors[player.getcurrentfloor()], player.getpos(), floors[player.getcurrentfloor()].getstair());
+                    entityMgr.SpawnMonster(floors[player.getcurrentfloor()], player.getpos(), floors[player.getcurrentfloor()].getstair());
                 }
             }
-            printmap(floors[player.getcurrentfloor()], player);
+            entityMgr.RemoveInactive();
+            entityMgr.UpdateMonster(floors[player.getcurrentfloor()], player.getpos(), player);
+            entityMgr.RemoveInactive();
+            printmap(floors[player.getcurrentfloor()], player, entityMgr);
         }
     }
 }

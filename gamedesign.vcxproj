@@ -128,6 +128,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CreateLog.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Vec2.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Tile.h" />
@@ -136,9 +138,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CreateLog.cpp" />
+    <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="player.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

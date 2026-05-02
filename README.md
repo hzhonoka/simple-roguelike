@@ -5,7 +5,7 @@
 ## 技术栈
 
 - C++17
-- 标准库：`std::vector`、`std::stack`、`std::mt19937`、`&lt;chrono&gt;`、`&lt;fstream&gt;`
+- 标准库：`std::vector`、`std::stack`、`std::mt19937`、`<chrono>`、`<fstream>`
 - 终端渲染：ANSI 转义码（颜色 + 清屏），Windows API 兼容性处理
 - 构建工具：Visual Studio 2022 / MSBuild
 
@@ -48,6 +48,8 @@ cl /std:c++17 /EHsc MainGame.cpp Map.cpp Player.cpp CreateLog.cpp
 ## 项目结构
 
 ```
+
+
 .
 ├── MainGame.cpp      # 游戏主循环
 ├── Map.h / Map.cpp   # 地图生成与查询
@@ -56,4 +58,8 @@ cl /std:c++17 /EHsc MainGame.cpp Map.cpp Player.cpp CreateLog.cpp
 ├── Tile.h            # 地形枚举 + 颜色绑定
 ├── Color.h           # ANSI 颜色工具
 └── CreateLog.h/cpp   # 日志（预留存档接口）
+<<<<<<< HEAD
 ```
+=======
+
+>>>>>>> 4af9a4e (feat: add Entity system with Potions and Monster)
