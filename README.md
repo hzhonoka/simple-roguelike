@@ -1,6 +1,6 @@
 # Simple Roguelike
 
-大一五一假期 C++ 练手项目，终端 Roguelike 地牢生成器。
+大一五一假期 C++ 练手项目，终端 Roguelike 地牢生成器。QAQ
 
 ## 技术栈
 
