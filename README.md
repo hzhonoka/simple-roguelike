@@ -45,8 +45,9 @@
 cl /std:c++17 /EHsc MainGame.cpp Map.cpp Player.cpp CreateLog.cpp
 
 ```
+## 项目结构
 
-
+```
 .
 ├── MainGame.cpp      # 游戏主循环
 ├── Map.h / Map.cpp   # 地图生成与查询
@@ -55,3 +56,4 @@ cl /std:c++17 /EHsc MainGame.cpp Map.cpp Player.cpp CreateLog.cpp
 ├── Tile.h            # 地形枚举 + 颜色绑定
 ├── Color.h           # ANSI 颜色工具
 └── CreateLog.h/cpp   # 日志（预留存档接口）
+```
