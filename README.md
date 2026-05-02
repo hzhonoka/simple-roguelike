@@ -28,6 +28,13 @@
 - [ ] 战争迷雾 / 视口系统：仅渲染玩家周围区域
 - [ ] 上楼通道 `Tile::StairsUp`
 
+| 按键        | 功能            |
+| :-------- | :------------ |
+| `W/A/S/D` | 移动            |
+| `E`       | 下楼（站在 `>` 上时） |
+| `Q`       | 退出            |
+
+
 ## 编译运行
 
 ```bash
@@ -36,6 +43,7 @@
 
 # 或命令行（需 MSVC 环境）
 cl /std:c++17 /EHsc MainGame.cpp Map.cpp Player.cpp CreateLog.cpp
+```
 
 .
 ├── MainGame.cpp      # 游戏主循环
