@@ -115,7 +115,7 @@ Vec2 Map::getRandomFloorPosExcluding(Vec2 center, int minDist) const
 	return candidates[dist(gen)];
 }
 
-void Map::generate()
+void Map::generate(int floor)
 {
 	fillmap();
 	struct Dir 
@@ -155,7 +155,7 @@ void Map::generate()
 			if (get({j,i})==Tile::Wall&& get({ j-1,i }) == Tile::Floor&& get({ j+1,i }) == Tile::Floor)
 			{
 				int num = breakDist(gen);
-				if (num<=16)
+				if (num<=50-ReduceBreakChance(floor))
 				{
 					set({ j,i }, Tile::Floor);
 				}
@@ -163,7 +163,7 @@ void Map::generate()
 			else if (get({ j,i }) == Tile::Wall && get({ j,i + 1 }) == Tile::Floor && get({ j ,i - 1 }) == Tile::Floor)
 			{
 				int num = breakDist(gen);
-				if (num <= 16)
+				if (num <= 50 - ReduceBreakChance(floor))
 				{
 					set({ j,i }, Tile::Floor);
 				}

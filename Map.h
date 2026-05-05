@@ -2,6 +2,7 @@
 #include <vector>
 #include "Vec2.h"
 #include "Tile.h"
+#include "Difficulty.h"
 class Map
 {
 	private:
@@ -20,7 +21,7 @@ class Map
 		void set(Vec2 pos, Tile t);//改变某点属性
 		bool inBounds(Vec2 pos) const;//是否边界
 		bool isWalkable(Vec2 pos) const;//是否可走
-		void generate();
+		void generate(int floor);
 		Vec2 getRandomFloorPos() const;//获取一个随机的 Floor 坐标（用于玩家出生）
 		Vec2 getRandomFloorPosExcluding(Vec2 center, int minDist) const;
 		//获取一个随机的 Floor 坐标，但排除掉某个坐标周围 N 格（用于放楼梯，别刷在脸上）

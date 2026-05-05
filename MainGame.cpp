@@ -4,6 +4,7 @@
 #include "player.h"
 #include "color.h"
 #include "EntityManager.h"
+#include "Difficulty.h"
 #include<iostream>
 #include <windows.h>
 #include <conio.h>
@@ -42,7 +43,7 @@ void static printmap(const Map& themap,Player& player, const EntityManager& enti
         }
         std::cout << line << '\n';
     }
-    std::cout << "\nHP:" << player.getcurhp() << "/" << player.getmaxhp() << '\n';
+    std::cout << "\nHP:" << player.getcurhp() << "/" << player.getmaxhp() << " | Monsters:" << entityMgr.GetMonsterCount()<< '\n';
 }
 int main()
 {
@@ -61,17 +62,17 @@ int main()
     Log();
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> mapsizeDist(7, 12);
+    std::uniform_int_distribution<int> mapsizeDist(3, 10);
     
     Player player({ 1,1 }, 100, 100);
-    int h = mapsizeDist(gen) * 2 + 1;
-    int w = mapsizeDist(gen) * 2 + 1;
+    int h = (mapsizeDist(gen) + AddMapSize(player.getcurrentfloor())) * 2 + 1;
+    int w = (mapsizeDist(gen) + AddMapSize(player.getcurrentfloor())) * 2 + 1;
     floors.emplace_back(h, w);
-    floors[0].generate();
+    floors[0].generate(player.getcurrentfloor());
     player.setpos(floors[0].getRandomFloorPos());
     floors[0].setstairs(floors[0].getRandomFloorPosExcluding(player.getpos(), 8));
-    entityMgr.SpawnPotion(floors[0], player.getpos(), floors[0].getstair());
-    entityMgr.SpawnMonster(floors[0], player.getpos(), floors[0].getstair());
+    entityMgr.SpawnPotion(floors[0], floors[0].getstair(), player);
+    entityMgr.SpawnMonster(floors[0], floors[0].getstair(), player);
     printmap(floors[0], player, entityMgr);
 
     while (true) {
@@ -89,21 +90,54 @@ int main()
             {
                 if (key == 'e' || key == 'E')
                 {
-                    h = mapsizeDist(gen) * 2 + 1;
-                    w = mapsizeDist(gen) * 2 + 1;
+                    h = (mapsizeDist(gen) + AddMapSize(player.getcurrentfloor())) * 2 + 1;
+                    w = (mapsizeDist(gen) + AddMapSize(player.getcurrentfloor())) * 2 + 1;
                     player.godown();
                     floors.emplace_back(h, w);
-                    floors[player.getcurrentfloor()].generate();
+                    floors[player.getcurrentfloor()].generate(player.getcurrentfloor());
                     player.setpos(floors[player.getcurrentfloor()].getRandomFloorPos());
                     floors[player.getcurrentfloor()].setstairs(floors[player.getcurrentfloor()].getRandomFloorPosExcluding(player.getpos(), 8));
                     entityMgr.clear();
-                    entityMgr.SpawnPotion(floors[player.getcurrentfloor()], player.getpos(), floors[player.getcurrentfloor()].getstair());
-                    entityMgr.SpawnMonster(floors[player.getcurrentfloor()], player.getpos(), floors[player.getcurrentfloor()].getstair());
+                    entityMgr.SpawnPotion(floors[player.getcurrentfloor()], floors[player.getcurrentfloor()].getstair(),player);
+                    entityMgr.SpawnMonster(floors[player.getcurrentfloor()], floors[player.getcurrentfloor()].getstair(),player);
                 }
             }
             entityMgr.RemoveInactive();
             entityMgr.UpdateMonster(floors[player.getcurrentfloor()], player.getpos(), player);
             entityMgr.RemoveInactive();
+            if (player.getcurhp() <= 0) {
+                std::cout << "\n\n\033[91m========== YOU DIED ==========\033[0m\n";
+                std::cout << "Floor: " << player.getcurrentfloor() + 1 << "\n";
+                std::cout << "Monsters remaining: " << entityMgr.GetMonsterCount() << "\n";
+                std::cout << "\nPress [R] to restart  |  [Q] to quit\n";
+                while (true) {
+                    char k = _getch();
+                    if (k == 'r' || k == 'R') {
+                        // ===== 重置整个世界 =====
+                        floors.clear();           // 删掉所有地图层
+                        entityMgr.clear();        // 删掉所有实体
+                        player = Player({ 1,1 }, 100, 100);  // 玩家重生
+
+                        // 重新生成第一层
+                        int h = (mapsizeDist(gen) + AddMapSize(0)) * 2 + 1;
+                        int w = (mapsizeDist(gen) + AddMapSize(0)) * 2 + 1;
+                        floors.emplace_back(h, w);
+                        floors[0].generate(0);
+                        player.setpos(floors[0].getRandomFloorPos());
+                        floors[0].setstairs(floors[0].getRandomFloorPosExcluding(player.getpos(), 8));
+                        entityMgr.SpawnPotion(floors[0], floors[0].getstair(),player);
+                        entityMgr.SpawnMonster(floors[0], floors[0].getstair(), player);
+
+                        break;  // 跳出等待，继续外层 while(true) 游戏循环
+                    }
+
+                    if (k == 'q' || k == 'Q') {
+                        return 0;  // 结束程序
+                    }
+                }
+
+                continue;  // 跳过本次 printmap，下回合重新开始
+            }
             printmap(floors[player.getcurrentfloor()], player, entityMgr);
         }
     }

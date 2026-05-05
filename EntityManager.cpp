@@ -1,5 +1,6 @@
 #include "EntityManager.h"
 #include <algorithm>
+#include "player.h"
 
 EntityManager::EntityManager() : rng(std::random_device{}()) {}
 
@@ -32,12 +33,24 @@ bool EntityManager::HasEntityAt(Vec2 targetpos) const
 	return GetEntityAt(targetpos) != nullptr;
 }
 
-Vec2 EntityManager::FindValidPos(const Map& map, Vec2 ExcludePlayer, Vec2 ExcludeStair) const
+int EntityManager::GetMonsterCount() const
+{
+	int count = 0;
+	for (const auto& single : entities)
+	{
+		if (single.entitytype==EntityType::Monster&&single.active==true)
+		{
+			count += 1;
+		}
+	}
+	return count;
+}
+Vec2 EntityManager::FindValidPos(const Map& map, Vec2 ExcludeStair,Player& player) const
 {
 	for (int cnt = 0; cnt < 100; cnt++)
 	{
-		Vec2 PossibleChoice = map.getRandomFloorPos();
-		if (!((PossibleChoice.x == ExcludePlayer.x && PossibleChoice.y == ExcludePlayer.y) ||
+		Vec2 PossibleChoice = map.getRandomFloorPosExcluding(player.getpos(),6);
+		if (!((PossibleChoice.x == player.getpos().x && PossibleChoice.y == player.getpos().y) ||
 			(PossibleChoice.x == ExcludeStair.x && PossibleChoice.y == ExcludeStair.y))
 			&&!HasEntityAt(PossibleChoice))
 		{
@@ -47,16 +60,22 @@ Vec2 EntityManager::FindValidPos(const Map& map, Vec2 ExcludePlayer, Vec2 Exclud
 	return { 1,1 };//
 }
 
-void EntityManager::SpawnPotion(const Map& map, Vec2 playerpos, Vec2 stairpos)
+void EntityManager::SpawnPotion(const Map& map, Vec2 stairpos,Player& player)
 {
-	Vec2 TempPos = FindValidPos(map, playerpos, stairpos);
+	Vec2 TempPos = FindValidPos(map,stairpos,player);
 	entities.push_back({ TempPos,'!',Color::Red,EntityType::Potion,0,true });
 }
 
-void EntityManager::SpawnMonster(const Map& map, Vec2 playerpos, Vec2 stairpos)
+void EntityManager::SpawnMonster(const Map& map, Vec2 stairpos, Player& player)
 {
-	Vec2 TempPos = FindValidPos(map, playerpos, stairpos);
-	entities.push_back({ TempPos,'S',Color::Green,EntityType::Monster,30,true });
+	int count = SetMonsterCount(player.getcurrentfloor());
+	while (count != 0)
+	{
+		count--;
+		Vec2 playerpos = player.getpos();
+		Vec2 TempPos = FindValidPos(map, stairpos,player);
+		entities.push_back({ TempPos,'S',Color::Green,EntityType::Monster,SetMonsterHP(player.getcurrentfloor()),true});
+	}
 }
 
 void EntityManager::UpdateMonster(const Map& map, Vec2 playerpos, Player& player)
@@ -105,7 +124,7 @@ void EntityManager::ProcessPlayerAction(Player& player, Vec2 nextPos, const Map&
 	auto e = GetEntityAt(nextPos);
 
 	if (e && e->entitytype == EntityType::Monster) {
-		player.takeDamage(5);
+		player.takeDamage(SetMonsterDamage(player.getcurrentfloor()));
 		e->hp -= 20;
 		if (e->hp <= 0) e->active = false;
 	}

@@ -39,6 +39,9 @@
     <ClInclude Include="EntityManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Difficulty.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainGame.cpp">

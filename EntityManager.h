@@ -4,25 +4,29 @@
 #include "Map.h"
 #include "player.h"
 #include <random>
-
+#include "Difficulty.h"
 class EntityManager
 {
 	private:
 		std::vector<Entity> entities;
-		Vec2 FindValidPos(const Map& map, Vec2 ExcludePlayer, Vec2 ExcludeStair) const;
+		Vec2 FindValidPos(const Map& map, Vec2 ExcludeStair,Player& player) const;
 		std::mt19937 rng;
 
 	public:
 		EntityManager();
-		void SpawnPotion(const Map& map, Vec2 playerpos, Vec2 stairpos);
-		void SpawnMonster(const Map& map, Vec2 playerpos, Vec2 stairpos);
+		void SpawnPotion(const Map& map, Vec2 stairpos, Player& player);
+		void SpawnMonster(const Map& map, Vec2 stairpos, Player& player);
 		Entity* GetEntityAt(Vec2 targetpos);
 		const Entity* GetEntityAt(Vec2 targetpos) const;//
 		bool HasEntityAt(Vec2 targetpos) const;
+
+		int GetMonsterCount() const;
 
 		void UpdateMonster(const Map& map, Vec2 playerpos, Player& player);
 		void ProcessPlayerAction(Player& player, Vec2 nextPos, const Map& map);
 		void RemoveInactive();
 
 		void clear();
+
+
 };
