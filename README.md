@@ -5,7 +5,7 @@
 ## 技术栈
 
 - C++17
-- 标准库：`std::vector`、`std::stack`、`std::mt19937`、`&lt;chrono&gt;`、`&lt;fstream&gt;`
+- 标准库：`std::vector`、`std::stack`、`std::mt19937`、`<chrono>`、`<fstream>`
 - 终端渲染：ANSI 转义码（颜色 + 清屏），Windows API 兼容性处理
 - 构建工具：Visual Studio 2022 / MSBuild
 
@@ -37,7 +37,7 @@
 | 按键 | 功能 |
 |:---|:---|
 | `W/A/S/D` | 移动 / 撞向怪物对砍 |
-| `E` | 下楼（站在 `&gt;` 上时） |
+| `E` | 下楼（站在 `>` 上时） |
 | `R` | 死亡后重新开始 |
 | `Q` | 退出游戏 |
 
